@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+actor 一般ユーザー as g
+
+package PHPSNS2021 {
+  usecase "1-1 ユーザー登録" as UC01
+  usecase "1-2 ログイン" as UC02
+  usecase "1-3 フォロー" as UC03
+  usecase "1-4 投稿" as UC04
+  usecase "1-5 リツイート" as UC05
+  usecase "1-6 退会" as UC06
+  usecase "1-7 パスワード変更" as UC07
+}
+g --> UC01
+g --> UC02
+g --> UC03
+g --> UC04
+g --> UC05
+g --> UC06
+g --> UC07
+@enduml
