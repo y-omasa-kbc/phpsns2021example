@@ -41,8 +41,11 @@ if($passMatched){
     } catch ( PDOException $pdoex) {
         if($pdoex->getCode() == 23000){ //制約違反
             $match_userid="/Duplicate entry '\S*' for key 'username'/m";
+            $match_email="/Duplicate entry '\S*' for key 'email'/m";
             if( preg_match($match_userid,$pdoex->getMessage()) ){
                 $usernameUnique = false;
+            } elseif ( preg_match($match_email,$pdoex->getMessage()) ){
+                $emailUnique = false;
             } else {
                 var_dump($pdoex->getMessage());
             }
@@ -57,6 +60,12 @@ if($passMatched){
 <?php if( !$usernameUnique ): ?>
 
 <p>ユーザー名が登録済みのアカウントと重複しています。別のユーザー名を指定してください。
+    <a href="user_register.html">戻る</a>
+</p>
+
+<?php elseif( !$emailUnique ): ?>
+
+<p>メールアドレスが登録済みのアカウントと重複しています。別のメールアドレスを指定してください。
     <a href="user_register.html">戻る</a>
 </p>
 
