@@ -9,6 +9,7 @@
 <body>
 
 <?php
+session_start();
 
 $usernameUnique = true;
 $emailUnique = true;
@@ -38,6 +39,10 @@ if($passMatched){
         $data[]=$email;
         //安全性のため型指定して値をバインドすべきだが、教科書に合わせる
         $stmt->execute($data);
+        //詳細入力処理のためユーザー名,メールアドレスをセッション変数に記録
+        $_SESSION['username'] = $username;
+        $_SESSION['email'] = $email;
+
     } catch ( PDOException $pdoex) {
         if($pdoex->getCode() == 23000){ //制約違反
             $match_userid="/Duplicate entry '\S*' for key 'username'/m";
@@ -71,10 +76,27 @@ if($passMatched){
 
 <?php else: ?>
 
-<p> 詳細入力画面　未実装 </P>
+<p> 詳細入力画面</P>
+<p>
 ユーザー名：<?php echo htmlspecialchars($username); ?><br>
 パスワード：　===非表示===<br>
 メールアドレス:<?php echo htmlspecialchars($email); ?><br>
+<hr>
+</p>
+<form method="post" action="user_register_detail.php">
+        フルネーム(実名　利用者には表示されません)：<br>
+        <input type="text" name="fullname" style="width:200px"><br>
+        ニックネーム(表示名)：<br>
+        <input type="text" name="nickname" style="width:200px"><br>
+        生年月日：<br>
+        <input type="date" name="birth" style="width:150px"><br>
+        コメント(プロフィール画面に表示されます)：<br>
+        <input type="text" name="comment" style="width:200px"><br>
+        <br>        
+
+        <input type="button" onclick="history.back()" value="戻る">
+        <input type="submit" value="ＯＫ">
+</form>
 
 <?php endif; ?>    
 
