@@ -38,17 +38,37 @@ if($passMatched){
         $data[]=$email;
         //安全性のため型指定して値をバインドすべきだが、教科書に合わせる
         $stmt->execute($data);
-    } catch ( Exception $e) {
-        var_dump($e->getMessage());
-    }   
+    } catch ( PDOException $pdoex) {
+        if($pdoex->getCode() == 23000){ //制約違反
+            $match_userid="/Duplicate entry '\S*' for key 'username'/m";
+            if( preg_match($match_userid,$pdoex->getMessage()) ){
+                $usernameUnique = false;
+            } else {
+                var_dump($pdoex->getMessage());
+            }
+        } else {
+            var_dump($pdoex->getMessage());
+        }
+    } 
     $dbh=null;
 }
 ?>
+
+<?php if( !$usernameUnique ): ?>
+
+<p>ユーザー名が登録済みのアカウントと重複しています。別のユーザー名を指定してください。
+    <a href="user_register.html">戻る</a>
+</p>
+
+<?php else: ?>
 
 <p> 詳細入力画面　未実装 </P>
 ユーザー名：<?php echo htmlspecialchars($username); ?><br>
 パスワード：　===非表示===<br>
 メールアドレス:<?php echo htmlspecialchars($email); ?><br>
+
+<?php endif; ?>    
+
 
 </body>
 </html>
