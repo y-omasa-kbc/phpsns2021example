@@ -1,7 +1,13 @@
-<!DOCTYPE html>
 <?php
+session_start();
+
+$logedIn = false;
+if( isset($_SESSION['username']) ){
+    $logedIn = true;
+}
 
 ?>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -11,7 +17,14 @@
 
 <body>
     <a href="user_register.html">ユーザー登録</a><br />
+    <a href="login.php">ログイン</a><br />
     <br />
+
+<?php if( $logedIn ): ?>
+    ログイン済み
+<?php else: ?>
+    未ログイン
+<?php endif; ?>
 
 
 </body>
