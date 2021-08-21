@@ -24,6 +24,7 @@ if($fieldschecked){
         $stmt->execute($data);
         //usernameがuniqueなので、繰り返しは0ないし1回
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $_SESSION['userid'] = $result['id'];
             $_SESSION['username'] = $result['username'];
             $_SESSION['nickname'] = $result['nickname'];
             $_SESSION['comment'] = $result['comment'];
