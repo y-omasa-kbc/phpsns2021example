@@ -16,15 +16,13 @@ if( isset($_SESSION['username']) ){
 </head>
 
 <body>
+<?php if( !$logedIn ): ?>
     <a href="user_register.html">ユーザー登録</a><br />
     <a href="login.php">ログイン</a><br />
-    <br />
-
-<?php if( $logedIn ): ?>
-    ログイン済み
 <?php else: ?>
-    未ログイン
+    <a href="newpost.php">新規投稿</a><br />
 <?php endif; ?>
+
 
 
 </body>
