@@ -56,7 +56,7 @@ try{
 <hr>
 <?php foreach ($posts as $post): ?><p>
 <?php echo $post['postdate']; ?><br>    
-<?php echo $post['nickname']; ?><br>
+<a href='user.php?id=<?php echo $post['userid']; ?>'><?php echo $post['nickname']; ?></a><br>
 <?php echo $post['content']; ?>
 </p>
 <hr>
