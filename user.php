@@ -33,15 +33,46 @@ try{
     $dbh=null;
 }  
 
-if( isset($nickname) ){ //ユーザーが見つかったら、DBから投稿情報を取得
-    try{
+$isOwn = false; //自分のページか？
+if( $uid == $_SESSION['userid']) {
+    $isOwn = true;
+}
+
+$isFollowing = false; //フォロー中か？
+
+if( isset($nickname) ){ //ユーザーが見つかったら、
+    if( !$isOwn ){  //自分のページでなければ、フォロー済みかを確認
+        try{ //DBから投稿情報を取得
+            $dbh=new PDO($dsn,$user,$password);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+            //指定されているユーザーが行った投稿を取得
+            $sql='SELECT * FROM t_follow ' ;
+            $sql.='WHERE userid = ? AND follow = ?';
+            $data=[];   // 配列をクリア
+            $data[]=$_SESSION['userid'];
+            $data[]=$uid;
+            $stmt=$dbh->prepare($sql);
+            $stmt->execute($data);
+            while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+                //レコードがある=フォロー中であった
+                $isFollowing = true;
+            }
+        } catch ( PDOException $pdoex) {
+            var_dump($pdoex->getMessage());
+        } finally {
+            $dbh=null;
+        }  
+    }
+
+    try{ //DBから投稿情報を取得
         $dbh=new PDO($dsn,$user,$password);
         $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         //指定されているユーザーが行った投稿を取得
         $sql='SELECT * FROM v_currentposts ' ;
         $sql.='WHERE restricted = false AND userid = ?';
         $sql.='ORDER BY postdate DESC';
-        $data[0]=$uid;  // $data[]=$uid; だと配列要素の追加になってしまうので
+        $data=[];   // 配列をクリア
+        $data[]=$uid;  
         $stmt=$dbh->prepare($sql);
         $stmt->execute($data);
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -53,6 +84,12 @@ if( isset($nickname) ){ //ユーザーが見つかったら、DBから投稿情�
     } finally {
         $dbh=null;
     }  
+}
+
+if( !$isOwn){  //自分自身でない
+    //フォロー/解除処理のためのトークンを準備
+    $token = substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyz'), 0, 32);
+    $_SESSION['token'] = $token;
 }
 
 ?>
@@ -71,6 +108,21 @@ if( isset($nickname) ){ //ユーザーが見つかったら、DBから投稿情�
 <?php else: ?><!--ユーザーが見つかった -->
     <?php echo $nickname; ?><br> 
     <?php echo $comment; ?><br> 
+
+    <?php if( !$isOwn ): ?><!--自分ではない -->
+        <form method="post" action="follow.php">
+            <input type="hidden" name="subject" value="<?php echo $uid; ?>">
+            <input type="hidden" name="token" value="<?php echo $token; ?>">
+            <?php if( $isFollowing ): ?><!-- フォロー中 -->
+                <input type="hidden" name="todo" value="remove">
+                <input type="submit" value="フォローをやめる">
+            <?php else:?><!-- フォローしてない -->
+                <input type="hidden" name="todo" value="follow">
+                <input type="submit" value="フォローする">
+            <?php endif; ?>
+        </form>
+    <?php endif; ?>
+
     <hr>
     <h3>このユーザーの投稿</h3>
     <hr>
