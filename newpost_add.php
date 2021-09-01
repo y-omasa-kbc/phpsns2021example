@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {  // GETメソッドでアクセスさ
         exit(1);
     }
     $content = $_POST['content'];
+    $restricted = ($_POST['restrict']=="restricted");
+
 
     $dsn='mysql:dbname=phpsns2021;host=localhost;charset=utf8';
     $user='root';
@@ -35,12 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {  // GETメソッドでアクセスさ
         $dbh=new PDO($dsn,$user,$password);
         $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
-        $sql='INSERT INTO t_post(userid,postdate,content) VALUES (?,CAST( NOW() AS datetime),?)';
+        $sql='INSERT INTO t_post(userid,postdate,content,restricted) ';
+        $sql.='VALUES (?,CAST( NOW() AS datetime),?,?)';
 
         $stmt=$dbh->prepare($sql);
         $data[]=$userId;
         $data[]=$content;
-        
+        if($restricted){
+            $data[]=true;
+        } else {
+            $data[]=false;
+        }
         $stmt->execute($data);
         $dbh=null;
 

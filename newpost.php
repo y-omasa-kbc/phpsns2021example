@@ -39,8 +39,7 @@ $_SESSION['token'] = $token;
         <textarea name="content" rows="3" cols="40"></textarea><br>
         添付画像:<br>
         未実装<br>
-        フォロワーオンリー:<br>
-        未実装<br>
+        フォロワーオンリー<input type="checkbox" name="restrict" value="restricted"><br>
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         <input type="button" onclick="history.back()" value="戻る">
         <input type="submit" value="ＯＫ">
